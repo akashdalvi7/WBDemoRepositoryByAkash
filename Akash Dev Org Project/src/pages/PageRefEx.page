@@ -1,0 +1,5 @@
+<apex:page controller="google_redir">
+    <apex:form >
+        <apex:commandButton action="{!hello1}"  value="Click me to visit Google"/>
+    </apex:form>
+</apex:page>

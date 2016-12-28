@@ -1,0 +1,12 @@
+<apex:page standardController="Case">
+<apex:pageBlock >
+        <apex:pageBlockTable value="{!Case}" var="c">
+            <apex:column value="{!c.Owner.Name}"/>
+            <apex:column value="{!c.Account.Name}"/>
+            <apex:column value="{!c.Contact.Name}"/>
+            <apex:column value="{!c.CaseNumber}"/>
+            <apex:column value="{!c.Type}"/>
+            
+        </apex:pageBlockTable>
+    </apex:pageBlock>
+</apex:page>

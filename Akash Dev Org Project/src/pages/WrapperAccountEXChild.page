@@ -1,0 +1,11 @@
+<apex:page Controller="AccountSelectClassController1" sidebar="false">
+  <apex:form >
+    <apex:pageBlock >
+       <apex:pageBlockTable value="{!selectedAccounts}" var="c" id="table2" title="Selected Accounts">
+                    <apex:column value="{!c.Name}" headerValue="Account Name"/>
+                    <apex:column value="{!c.BillingState}" headerValue="Billing State"/>
+                    <apex:column value="{!c.Phone}" headerValue="Phone"/>
+       </apex:pageBlockTable>
+    </apex:pageBlock>
+  </apex:form>
+</apex:page>

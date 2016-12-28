@@ -1,0 +1,546 @@
+<apex:page controller="bofc.BOFCExportMetaData" sidebar="false" showHeader="false">
+ 
+     <style>
+        .drop_zone
+        {
+        border: 2px dashed #bbb;
+        -moz-border-radius: 5px;
+        -webkit-border-radius: 5px;
+        border-radius: 5px;
+        width: 65%;
+        margin:0 auto;
+        margin-bottom:10px;
+        }
+        
+        .drop_zone input
+        {
+        color: #999999;
+        margin-left: 92px;
+        margin-top: 20px;
+        }
+        .drag_drop_qoute
+        {
+        -moz-border-radius: 5px;
+        -webkit-border-radius: 5px;
+        border-radius: 5px;
+        padding:8px;
+        text-align: center;
+        font: 16pt bold Arial, Helvetica, sans-serif;
+        color: #44BEEE;
+        
+        }
+        
+        
+        
+        #spinnerDiv
+        {
+        position: fixed;
+        top: 50%;
+        left: 50%;
+        z-index: 111;
+        }
+        
+        .overlay_div
+        {
+        display:none;
+        position:fixed;
+        width:100%;
+        height:100%;
+        opacity:0.1;
+        top: 0px;
+        left: 0px;
+        z-index: 1111;
+        background-color:#000;
+        }
+        
+        body .bPageTitle{
+        padding: 10px 0 0 !important;
+        }
+        
+        .bPageTitle {
+              margin-bottom: 0px !important;
+         }
+         
+         .bPageTitle .ptBody .content{width:30% !important;}
+         
+         body{width:90% !important; margin:0 auto !important;}
+         
+         .downloadClass{
+            font-size: 15px;
+            text-align: right;
+            float: right;
+            
+            font-weight: bold;
+            padding: 7px;
+            background: #44BEEE;
+            border: 2px solid #44BEEE;
+            border-radius: 3px;
+            color: #fff;
+            }
+            
+             .downloadClass a{
+             color: #fff;
+             }
+                
+                .hideDropClass{
+            font-size: 15px;
+            text-align: right;
+            float: right;
+            margin-right: 8px;
+            font-weight: bold;
+            border: 1px solid #44BEEE;
+            padding: 2px;
+            border-radius: 3px;
+            }
+            
+            .OCpageDescription{
+                font-size:25px;}
+                
+             .ptBody {
+              background-color: #fff !important;
+              padding: 0px;
+              color: #000;
+              padding: 5px 0 9px 0 !important;
+              clear: both;  
+              border-bottom: 8px solid #44BEEF;
+              position: fixed;
+              width: 90%;
+              z-index: 1111;
+            }
+              .OCpageType{
+                  font-size:11px;
+                  font-weight:bold;
+                  color:#000;
+                  
+              }      
+              
+             body .content{
+                width: 29%;
+              float: left;
+              
+            }
+            
+            .ShowHideButtonClass{
+              background: transparent;
+              padding: 0px;
+              border: 0px;
+              padding: 7px;
+              }
+            
+            form{
+              clear: both;
+              padding-top: 8%;
+            }
+            
+            .table_container
+            {
+             overflow-x:auto;
+            }
+        
+    </style>
+
+    <apex:includeScript value="{!URLFOR($Resource.bofc__BulkFieldCreator, 'js/jquery-1.9.1.js')}" />
+    <apex:includeScript value="{!URLFOR($Resource.bofc__BulkFieldCreator, 'js/jquery.csv-0.71.js')}" />
+    <apex:includeScript value="{!URLFOR($Resource.bofc__BulkFieldCreator, 'ExcelUpload/excel/jszip.js')}" />
+    <apex:includeScript value="{!URLFOR($Resource.bofc__BulkFieldCreator, 'ExcelUpload/excel/xlsx.js')}" />
+    <apex:includeScript value="{!URLFOR($Resource.bofc__BulkFieldCreator, 'ExcelUpload/excel/xls.js')}" />
+    <apex:includeScript value="{!$Resource.bofc__Spin}" />
+    
+    <div class="ptBody secondaryPalette brandSecondaryBrd">
+        <apex:outputPanel rendered="{!TypeofVersion=='FreeVersion'}">
+                    <div style="background: red;width: 100%;margin-bottom:10px; color: white;   text-align: center; font-size: 20px;">
+                             Free version. For Unlimited access <a style="color: white;" target="_blank" href="http://store.tech9logy.com/salesforce/bulk-object-field-creator.html"><u>Click Here</u></a>
+                    </div>
+                </apex:outputPanel>
+        
+        <div class="content">
+            <h1 class="OCpageType">Salesforce</h1><br/>
+            <span class="titleSeparatingColon">:</span>
+            <h2 class="OCpageDescription"> View/Export Details</h2>
+            <div class="blank"></div>
+        </div>
+        <!--<div class="home_icon"><a href="/apex/ConfigBenchHomePage" style="color:blue;"><apex:image url="{!URLFOR($Resource.ConfigBench, 'ConfigBenchHomePage/img/gohome.png')}" /></a></div> -->
+   </div>
+    
+     
+   
+ 
+ 
+ <apex:form >
+     <apex:actionFunction name="refreshPage" reRender="pg" action="{!changeMetadataType}" status="search_Status_main1" />
+     
+     <script>
+        function loading_Main(val) {
+                 if (val) {
+                   document.getElementById('contentLoadingMain').style.display = 'block';
+                   
+                 }
+                 else {
+                   document.getElementById('contentLoadingMain').style.display = 'none';
+                  
+                 }
+               }
+    </script>
+     
+     <div id="contentLoadingMain" style="display:none;position:fixed;top:40%;right:40%;">
+                          <div style="text-align: center;">
+                               <apex:image url="{!URLFOR($Resource.bofc__BulkFieldCreator, '/BulkFieldCreatorLoadingImage.gif')}" width="150" height="150" />
+                              <br/>
+                              <center>  <span style="font-size:22px;color:black;font-weight:bold;">  Processing...please wait...!!! </span> </center>
+                          </div>
+            </div>
+     <apex:actionStatus onstart="loading_Main(true)" onstop="loading_Main(false)" id="search_Status_main1" startStyle="color:red;"/> 
+            
+     
+     <apex:pageBlock id="pg" mode="maindetail">
+      <apex:outputPanel rendered="{!AllowPageAccess}">
+         <apex:pageBlockSection columns="2"> 
+            <apex:pageblockSectionItem >
+                Metadata Type
+                <apex:outputPanel >
+                    <apex:outputText value="{!metadatatype}" rendered="{!ViewMode=='1' || ViewMode=='0'}"/>    
+                    <apex:outputPanel rendered="{!ViewMode!='1' && ViewMode!='0' }">    
+                    <apex:selectList value="{!metadatatype}"  multiselect="false" size="1" style="border-left:3px solid red" onchange="refreshPage();" >
+                        <apex:selectOptions value="{!MetaDataTypes}"/>
+                    </apex:selectList>
+                    <span style="color:red;font-size: 10px;text-align: right; margin: 10px;">*Select Metadata Type</span>
+                </apex:outputPanel>
+                </apex:outputPanel>
+            </apex:pageblockSectionItem>
+            <apex:pageblockSectionItem />
+            <apex:pageBlockSectionItem rendered="{!metadatatype != 'Profile'}">
+                Object Name
+                <apex:outputPanel >
+                    <apex:selectList value="{!ObjectName}" multiselect="false" size="1" style="border-left:3px solid red">
+                        <apex:selectOptions value="{!StandardCustomIgnoreSytemObjects1}"/>
+                    </apex:selectList>
+                    <span style="color:red;font-size: 10px;text-align: right; margin: 10px;">*Select name of Object</span>
+                </apex:outputPanel>
+            </apex:pageblockSectionItem>
+            <apex:pageBlockSectionItem rendered="{!metadatatype == 'Profile'}">
+                Profile
+                <apex:outputPanel >
+                    <apex:selectList value="{!ProfileName}" multiselect="false" size="1" style="border-left:3px solid red">
+                        <apex:selectOptions value="{!lProfileOptions}"/>
+                    </apex:selectList>
+                    <span style="color:red;font-size: 10px;text-align: right; margin: 10px;">*Select name of Object</span>
+                </apex:outputPanel>
+            </apex:pageblockSectionItem>
+     
+            <br/>
+            <apex:outputPanel >
+                <apex:commandButton value="View Details" onclick="showOverlay()" action="{!DisplayDetails}" style="border-radius: 5px;color: white;padding: 7px;padding-right: 6px; background: lightseagreen;    font-size: 14px;    margin: 0px;    font-weight: bold;"/>
+                <apex:commandButton value="Export Details" status="search_Status_main1" rendered="{!ViewMode!='1'}" onclick="window.open('/apex/BOFCExportMetaDataReport?Profile={!ProfileName}&Object={!ObjectName}&Type={!metadatatype}','');"  style="border-radius: 5px; color: black;  padding: 6px;  padding-right: 6px;  font-size: 10px;  margin: 2px; background: bisque; font-weight: bold;"/>
+            </apex:outputPanel>
+        </apex:pageblockSection>
+        
+        <br/>
+             
+        
+        
+        <div class="tableContainer">
+        
+        <apex:outputPanel rendered="{!metadatatype == 'ObjectFields'}">
+                       <apex:pageblock id="profile2" title="Object-Fields" mode="maindetail">
+                        <table style="border: 1px solid #CCC;">
+                             <tr><td colspan="14" style="font-weight: bold;background-color: darkcyan;border: 1px solid #CCC;color:white;"><center>Object Details</center></td></tr>    
+                             <tr style="border: 1px solid #CCC;"> 
+                                 <th width="15%" style="font-weight: bold;background-color: #A097D4;;border: 1px solid #CCC;color:white;"><center>Object Label  </center></th>
+                                 <th style="font-weight: bold;background-color: #A097D4;border: 1px solid #CCC;color:white;"><center>Object Name</center> </th>
+                                 <th style="font-weight: bold;background-color: #A097D4;border: 1px solid #CCC;color:white;"><center>Plural Label</center> </th>
+                                 <th style="font-weight: bold;background-color: #A097D4;border: 1px solid #CCC;color:white;"><center>Is Custom</center> </th>
+                             
+                                 <apex:outputPanel rendered="{!Contains(ObjectName,'__c')==true}">
+                                 <th style="font-weight: bold;background-color: #A097D4;border: 1px solid #CCC;color:white;"><center>Description</center> </th>
+                                 <th style="font-weight: bold;background-color: #A097D4;border: 1px solid #CCC;color:white;"><center>Enter Record Name, Label and Format</center> </th>
+                                 <th style="font-weight: bold;background-color: #A097D4;border: 1px solid #CCC;color:white;"><center>Deployment Status</center> </th>
+                                 <th style="font-weight: bold;background-color: #A097D4;border: 1px solid #CCC;color:white;"><center>Allow Reports</center> </th>
+                                 <th style="font-weight: bold;background-color: #A097D4;border: 1px solid #CCC;color:white;"><center>Allow Activities</center> </th>
+                                 <th style="font-weight: bold;background-color: #A097D4;border: 1px solid #CCC;color:white;"><center>Track Field History</center> </th>
+                                 <th style="font-weight: bold;background-color: #A097D4;border: 1px solid #CCC;color:white;"><center>Allow in Chatter Groups</center> </th>
+                                 <th style="font-weight: bold;background-color: #A097D4;border: 1px solid #CCC;color:white;"><center>Allow Sharing</center> </th>
+                                 <th style="font-weight: bold;background-color: #A097D4;border: 1px solid #CCC;color:white;"><center>Allow Bulk Api Access</center> </th>
+                                 <th style="font-weight: bold;background-color: #A097D4;border: 1px solid #CCC;color:white;"><center>Allow Streaming Api Access</center> </th>
+                                 </apex:outputPanel>
+                             </tr>    
+                             
+                             <apex:repeat value="{!lObjectWrapper}" var="st" rendered="{!Contains(ObjectName,'__c')==false}">
+                                 <tr style="border: 1px solid #CCC;">
+                                     <td style="font-weight: bold;background-color: #CDEAA8;border: 1px solid #CCC;"><center> {!st.ObjectLabel} </center></td>
+                                     <td style="font-weight: bold;background-color: #CDEAA8;border: 1px solid #CCC;"> <center>{!st.fullName}</center> </td>
+                                     <td style="font-weight: bold;background-color: #CDEAA8;border: 1px solid #CCC;"> <center>{!st.pluralLabel}</center> </td>
+                                     <td style="font-weight: bold;background-color: #CDEAA8;border: 1px solid #CCC;"> <center><apex:inputCheckbox value="{!st.IsCustom}" disabled="true" /></center> </td>
+                                 </tr>
+                             </apex:repeat>
+                             
+                             <apex:repeat value="{!lObjectWrapper}" var="st" rendered="{!Contains(ObjectName,'__c')==true}">
+                                 <tr style="border: 1px solid #CCC;">
+                                     <td style="font-weight: bold;background-color: #CDEAA8;border: 1px solid #CCC;"><center> {!st.ObjectLabel} </center></td>
+                                     <td style="font-weight: bold;background-color: #CDEAA8;border: 1px solid #CCC;"> <center>{!st.fullName}</center> </td>
+                                     <td style="font-weight: bold;background-color: #CDEAA8;border: 1px solid #CCC;"> <center>{!st.pluralLabel}</center> </td>
+                                     <td style="font-weight: bold;background-color: #CDEAA8;border: 1px solid #CCC;"> <center><apex:inputCheckbox value="{!st.IsCustom}" disabled="true" /></center> </td>
+                                     <td style="font-weight: bold;background-color: #CDEAA8;border: 1px solid #CCC;"> <center>{!st.Description}</center> </td>
+                                     <td>
+                                         <table style="border: 1px solid #CCC;">
+                                             <tr style="border: 1px solid #CCC;"> 
+                                                 <th style="font-weight: bold;background-color: #A097D4;border: 1px solid #CCC;color:white;"><center>Label</center> </th>
+                                                 <th style="font-weight: bold;background-color: #A097D4;border: 1px solid #CCC;color:white;"><center>Type</center> </th>
+                                                 <th style="font-weight: bold;background-color: #A097D4;border: 1px solid #CCC;color:white;"><center>Display Format</center> </th>    
+                                             </tr>
+                                             <apex:repeat value="{!st}" var="s">
+                                             <tr style="border: 1px solid #CCC;">
+                                                 <td style="font-weight: bold;background-color: #CDEAA8;border: 1px solid #CCC;"><center> {!s.NameFieldLabel} </center></td>
+                                                 <td style="font-weight: bold;background-color: #CDEAA8;border: 1px solid #CCC;"><center> {!s.NameFieldType} </center></td>
+                                                 <td style="font-weight: bold;background-color: #CDEAA8;border: 1px solid #CCC;"><center> {!s.NameFieldformat} </center></td>
+                                             </tr>
+                                             </apex:repeat>
+                                         </table>
+                                     </td>
+                                     <td style="font-weight: bold;background-color: #CDEAA8;border: 1px solid #CCC;"> <center>{!st.deploymentStatus}</center> </td>
+                                     <td style="font-weight: bold;background-color: #CDEAA8;border: 1px solid #CCC;"> <center><apex:inputCheckbox value="{!st.enableReports}" disabled="true" /></center> </td>
+                                     <td style="font-weight: bold;background-color: #CDEAA8;border: 1px solid #CCC;"> <center><apex:inputCheckbox value="{!st.enableActivities}" disabled="true" /></center> </td>
+                                     <td style="font-weight: bold;background-color: #CDEAA8;border: 1px solid #CCC;"> <center><apex:inputCheckbox value="{!st.enableHistory}" disabled="true" /></center> </td>
+                                     <td style="font-weight: bold;background-color: #CDEAA8;border: 1px solid #CCC;"> <center><apex:inputCheckbox value="{!st.enableFeeds}" disabled="true" /></center> </td>
+                                     <td style="font-weight: bold;background-color: #CDEAA8;border: 1px solid #CCC;"> <center><apex:inputCheckbox value="{!st.enableSharing}" disabled="true" /></center> </td>
+                                     <td style="font-weight: bold;background-color: #CDEAA8;border: 1px solid #CCC;"> <center><apex:inputCheckbox value="{!st.enableBulkApi}" disabled="true" /></center> </td>
+                                     <td style="font-weight: bold;background-color: #CDEAA8;border: 1px solid #CCC;"> <center><apex:inputCheckbox value="{!st.enableStreamingApi}" disabled="true" /></center> </td>
+                                     
+                                 </tr>
+                             </apex:repeat>
+                       </table>      
+        
+                       <br/>
+                       <table style="border: 1px solid #CCC;">
+                                <tr><td colspan="14" style="font-weight: bold;background-color: darkcyan;border: 1px solid #CCC;color:white;"><center>Fields Detail</center></td></tr> 
+                                <tr style="border: 1px solid #CCC;"> 
+                                 <th width="15%" style="font-weight: bold;background-color: #A097D4;;border: 1px solid #CCC;color:white;"><center>Field Label  </center></th>
+                                 <th style="font-weight: bold;background-color: #A097D4;border: 1px solid #CCC;color:white;"><center>Field Name</center> </th>
+                                 <th style="font-weight: bold;background-color: #A097D4;border: 1px solid #CCC;color:white;"><center>Is Custom</center> </th>
+                                 <th style="font-weight: bold;background-color: #A097D4;border: 1px solid #CCC;color:white;"><center>Field Type</center> </th>
+                                 <th style="font-weight: bold;background-color: #A097D4;border: 1px solid #CCC;color:white;"><center>Length</center> </th>
+                                 <th style="font-weight: bold;background-color: #A097D4;border: 1px solid #CCC;color:white;"><center>Picklist Values</center> </th>
+                                 <th style="font-weight: bold;background-color: #A097D4;border: 1px solid #CCC;color:white;"><center>Default Value</center> </th>
+                                 <th style="font-weight: bold;background-color: #A097D4;border: 1px solid #CCC;color:white;"><center>Is Required</center> </th>
+                                 <th style="font-weight: bold;background-color: #A097D4;border: 1px solid #CCC;color:white;"><center>Is ExternalID</center> </th>
+                                 <th style="font-weight: bold;background-color: #A097D4;border: 1px solid #CCC;color:white;"><center>Is Unique</center> </th>
+                                 <th style="font-weight: bold;background-color: #A097D4;border: 1px solid #CCC;color:white;"><center>Help Text</center> </th>
+                                </tr>
+                                <apex:repeat value="{!lCreateFieldWrapper}" var="st">
+                                 <tr style="border: 1px solid #CCC;">
+                                     <td style="font-weight: bold;background-color: #CDEAA8;border: 1px solid #CCC;"><center> {!st.fieldLabel} </center></td>
+                                     <td style="font-weight: bold;background-color: #CDEAA8;border: 1px solid #CCC;"> <center>{!st.FieldFullName}</center> </td>
+                                     <td style="font-weight: bold;background-color: #CDEAA8;border: 1px solid #CCC;"> <center><apex:inputCheckbox value="{!st.isCustom}" disabled="true" /></center> </td>
+                                     <td style="font-weight: bold;background-color: #CDEAA8;border: 1px solid #CCC;"> <center>{!st.FieldType}</center> </td>
+                                     <td style="font-weight: bold;background-color: #CDEAA8;border: 1px solid #CCC;"> <center>{!st.fieldLength}</center> </td>
+                                     <td style="font-weight: bold;background-color: #CDEAA8;border: 1px solid #CCC;"> <center>  <apex:repeat value="{!st.lPicklistvalue}" var="a"> {!a}<br/> </apex:repeat> </center> </td>
+                                     <td style="font-weight: bold;background-color: #CDEAA8;border: 1px solid #CCC;"> <center>{!st.fieldDefaultValue}</center> </td>
+                                     <td style="font-weight: bold;background-color: #CDEAA8;border: 1px solid #CCC;"> <center><apex:inputCheckbox value="{!st.fieldRequired}" disabled="true" /></center> </td>
+                                     <td style="font-weight: bold;background-color: #CDEAA8;border: 1px solid #CCC;"> <center><apex:inputCheckbox value="{!st.fieldExternalID}" disabled="true" /></center> </td>
+                                     <td style="font-weight: bold;background-color: #CDEAA8;border: 1px solid #CCC;"> <center><apex:inputCheckbox value="{!st.FieldUnique}" disabled="true" /></center> </td>
+                                     <td style="font-weight: bold;background-color: #CDEAA8;border: 1px solid #CCC;"> <center>{!st.fieldhelpText}</center> </td>
+                                 </tr> </apex:repeat>
+                       </table> 
+                </apex:pageblock>
+            </apex:outputPanel>
+        
+        
+        
+        
+         <apex:outputPanel rendered="{!metadataType == 'Profile'}">
+                      <table style="border: 1px solid #CCC;">
+                         <tr><td colspan="4" style="font-weight: bold;background-color: darkcyan;border: 1px solid #CCC;color:white;"><center> Profile Details</center></td></tr> 
+                         <tr style="border: 1px solid #CCC;"> 
+                             <th width="15%" style="font-weight: bold;background-color: #9A8249;;border: 1px solid #CCC;color:white;"><center>Profile Id</center></th>
+                             <th width="15%" style="font-weight: bold;background-color: #9A8249;;border: 1px solid #CCC;color:white;"><center>Profile Name  </center></th>
+                             <th width="15%" style="font-weight: bold;background-color: #9A8249;;border: 1px solid #CCC;color:white;"><center>Is Custom  </center></th>
+                             <th width="15%" style="font-weight: bold;background-color: #9A8249;;border: 1px solid #CCC;color:white;"><center>Description  </center></th>
+                         </tr>    
+                         
+                         <apex:repeat value="{!lWrapperClassProfile}" var="p">
+                             <tr style="border: 1px solid #CCC;">
+                                 <td style="font-weight: bold;background-color: #CDEAA8;border: 1px solid #CCC;"><center><apex:outputText value="{!p.ProfileID}"/></center></td>
+                                 <td style="border: 1px solid #CCC;font-weight: bold;background-color: #CDEAA8;"><center> <apex:outputText value="{!p.ProfileName}"/></center></td>
+                                 <td style="border: 1px solid #CCC;font-weight: bold;background-color: #CDEAA8;"><center> <apex:inputCheckbox disabled="true" value="{!p.custom}" /> </center></td>
+                                 <td style="border: 1px solid #CCC;font-weight: bold;background-color: #CDEAA8;"><center> <apex:outputText value="{!p.description}"/> </center></td>
+                             </tr>
+                         </apex:repeat>
+                      </table>
+                     <br/>  
+                     
+                     <apex:repeat value="{!lWrapperClassProfile}" var="a">
+                      <table style="border: 1px solid #CCC;">
+                         <tr><td colspan="7" style="font-weight: bold;background-color: darkcyan;border: 1px solid #CCC;color:white;"><center>Object Permissions</center></td></tr> 
+                         <tr style="border: 1px solid #CCC;"> 
+                             <th width="15%" style="font-weight: bold;background-color: #9A8249;;border: 1px solid #CCC;color:white;"><center>Object Name</center></th>
+                             <th width="15%" style="font-weight: bold;background-color: #9A8249;;border: 1px solid #CCC;color:white;"><center>Read</center></th>
+                             <th width="15%" style="font-weight: bold;background-color: #9A8249;;border: 1px solid #CCC;color:white;"><center>Create</center></th>
+                             <th width="15%" style="font-weight: bold;background-color: #9A8249;;border: 1px solid #CCC;color:white;"><center>Edit</center></th>
+                             <th width="15%" style="font-weight: bold;background-color: #9A8249;;border: 1px solid #CCC;color:white;"><center>Delete</center></th>
+                             <th width="15%" style="font-weight: bold;background-color: #9A8249;;border: 1px solid #CCC;color:white;"><center>View All</center></th>
+                             <th width="15%" style="font-weight: bold;background-color: #9A8249;;border: 1px solid #CCC;color:white;"><center>Modify All</center></th>
+                         </tr>    
+                         
+                         <apex:repeat value="{!a.profileObjectPerms}" var="p">
+                             <tr style="border: 1px solid #CCC;">
+                                 <td style="border: 1px solid #CCC;font-weight: bold;background-color: #CDEAA8;"><center><apex:outputText value="{!p.Object_x}"/></center></td>
+                                 <td style="border: 1px solid #CCC;font-weight: bold;background-color: #CDEAA8;"><center> <apex:inputCheckbox disabled="true" value="{!p.allowRead}"/></center></td>
+                                 <td style="border: 1px solid #CCC;font-weight: bold;background-color: #CDEAA8;"><center> <apex:inputCheckbox disabled="true" value="{!p.allowCreate}"/> </center></td>
+                                 <td style="border: 1px solid #CCC;font-weight: bold;background-color: #CDEAA8;"><center> <apex:inputCheckbox disabled="true" value="{!p.allowEdit}"/> </center></td>
+                                 <td style="border: 1px solid #CCC;font-weight: bold;background-color: #CDEAA8;"><center> <apex:inputCheckbox disabled="true" value="{!p.allowDelete}"/> </center></td>
+                                 <td style="border: 1px solid #CCC;font-weight: bold;background-color: #CDEAA8;"><center> <apex:inputCheckbox disabled="true" value="{!p.viewAllRecords}"/> </center></td>
+                                 <td style="border: 1px solid #CCC;font-weight: bold;background-color: #CDEAA8;"><center> <apex:inputCheckbox disabled="true" value="{!p.modifyAllRecords}"/> </center></td>
+                             </tr>
+                         </apex:repeat>
+                      </table>
+                                
+                     <br/>
+                     
+                     <!-- <table style="border: 1px solid #CCC;">
+                         <tr><td colspan="2" style="font-weight: bold;background-color: darkcyan;border: 1px solid #CCC;color:white;"><center>Administrative Permissions</center></td></tr>  
+                         <tr style="border: 1px solid #CCC;"> 
+                             <th width="15%" style="font-weight: bold;background-color: #9A8249;;border: 1px solid #CCC;color:white;"><center>Permission</center></th>
+                             <th width="15%" style="font-weight: bold;background-color: #9A8249;;border: 1px solid #CCC;color:white;"><center>Enabled</center></th>
+                         </tr>    
+                         <apex:repeat value="{!sPermission}" var="l">
+                         <tr style="border: 1px solid #CCC;">
+                             <td style="border: 1px solid #CCC;font-weight: bold;background-color: #CDEAA8;"><center>{!l}</center></td>
+                             <td style="border: 1px solid #CCC;font-weight: bold;background-color: #CDEAA8;"><center> <apex:inputCheckbox disabled="true" value="{!map_AdmPer[left(a.Profileid,15)][l]}"/></center></td>
+                         </tr>
+                         </apex:repeat>
+                      </table> <br/> 
+                      <table style="border: 1px solid #CCC;">
+                         <tr><td colspan="2" style="font-weight: bold;background-color: darkcyan;border: 1px solid #CCC;color:white;"><center>General Permissions</center></td></tr>   
+                         <tr style="border: 1px solid #CCC;"> 
+                             <th width="15%" style="font-weight: bold;background-color: #9A8249;;border: 1px solid #CCC;color:white;"><center>Permission</center></th>
+                             <th width="15%" style="font-weight: bold;background-color: #9A8249;;border: 1px solid #CCC;color:white;"><center>Enabled</center></th>
+                         </tr>    
+                         <apex:repeat value="{!sGenPermission}" var="l">
+                         <tr style="border: 1px solid #CCC;">
+                             <td style="border: 1px solid #CCC;font-weight: bold;background-color: #CDEAA8;"><center>{!l}</center></td>
+                             <td style="border: 1px solid #CCC;font-weight: bold;background-color: #CDEAA8;"><center> <apex:inputCheckbox disabled="true" value="{!map_GenPer[left(a.Profileid,15)][l]}"/></center></td>
+                         </tr>
+                         </apex:repeat>
+                      </table> -->
+                      
+                      <table style="border: 1px solid #CCC;">
+                         <tr><td colspan="2" style="font-weight: bold;background-color: darkcyan;border: 1px solid #CCC;color:white;"><center>User Permissions</center></td></tr>  
+                         <tr style="border: 1px solid #CCC;"> 
+                             <th width="15%" style="font-weight: bold;background-color: #9A8249;;border: 1px solid #CCC;color:white;"><center>Permission</center></th>
+                             <th width="15%" style="font-weight: bold;background-color: #9A8249;;border: 1px solid #CCC;color:white;"><center>Enabled</center></th>
+                         </tr>    
+                         <apex:repeat value="{!a.lProfileUserPerm}" var="p">
+                         <tr style="border: 1px solid #CCC;">
+                             <td style="border: 1px solid #CCC;font-weight: bold;background-color: #CDEAA8;"><center><apex:outputText value="{!p.name}"/></center></td>
+                             <td style="border: 1px solid #CCC;font-weight: bold;background-color: #CDEAA8;"><center> <apex:inputCheckbox disabled="true" value="{!p.enabled}"/></center></td>
+                         </tr>
+                         </apex:repeat>
+                      </table>
+                      <br/>
+                     <table style="border: 1px solid #CCC;">
+                         <tr><td colspan="2" style="font-weight: bold;background-color: darkcyan;border: 1px solid #CCC;color:white;"><center>Tab Settings</center></td></tr>  
+                         <tr style="border: 1px solid #CCC;"> 
+                             <th width="15%" style="font-weight: bold;background-color: #9A8249;;border: 1px solid #CCC;color:white;"><center>Tab Name</center></th>
+                             <th width="15%" style="font-weight: bold;background-color: #9A8249;;border: 1px solid #CCC;color:white;"><center>Visibility</center></th>
+                         </tr>    
+                         <apex:repeat value="{!a.lProfTab}" var="p">
+                         <tr style="border: 1px solid #CCC;">
+                             <td style="border: 1px solid #CCC;font-weight: bold;background-color: #CDEAA8;"><center><apex:outputText value="{!p.tab}"/></center></td>
+                             <td style="border: 1px solid #CCC;font-weight: bold;background-color: #CDEAA8;"><center> <apex:inputCheckbox disabled="true" value="{!p.visibility}"/></center></td>
+                         </tr>
+                         </apex:repeat>
+                      </table><br/>
+                     
+                      <table style="border: 1px solid #CCC;">
+                          <tr><td colspan="4" style="font-weight: bold;background-color: darkcyan;border: 1px solid #CCC;color:white;"><center>Record Type Details</center></td></tr>  
+                         <tr style="border: 1px solid #CCC;"> 
+                             <th width="15%" style="font-weight: bold;background-color: #9A8249;;border: 1px solid #CCC;color:white;"><center>Record Type Name</center></th>
+                             <th width="15%" style="font-weight: bold;background-color: #9A8249;;border: 1px solid #CCC;color:white;"><center>Visibility</center></th>
+                             <th width="15%" style="font-weight: bold;background-color: #9A8249;;border: 1px solid #CCC;color:white;"><center>Default</center></th>
+                             <th width="15%" style="font-weight: bold;background-color: #9A8249;;border: 1px solid #CCC;color:white;"><center>Person Account Default</center></th>
+                         </tr>    
+                         <apex:repeat value="{!a.lProfRecordType}" var="p">
+                         <tr style="border: 1px solid #CCC;">
+                             <td style="border: 1px solid #CCC;font-weight: bold;background-color: #CDEAA8;"><center><apex:outputText value="{!p.recordType}"/></center></td>
+                             <td style="border: 1px solid #CCC;font-weight: bold;background-color: #CDEAA8;"><center> <apex:inputCheckbox disabled="true" value="{!p.visible}"/></center></td>
+                             <td style="border: 1px solid #CCC;font-weight: bold;background-color: #CDEAA8;"><center> <apex:inputCheckbox disabled="true" value="{!p.default_x}"/></center></td>
+                             <td style="border: 1px solid #CCC;font-weight: bold;background-color: #CDEAA8;"><center> <apex:inputCheckbox disabled="true" value="{!p.personAccountDefault}"/></center></td>
+                         </tr>
+                         </apex:repeat>
+                      </table><br/> 
+                      <table style="border: 1px solid #CCC;">
+                         <tr><td colspan="3" style="font-weight: bold;background-color: darkcyan;border: 1px solid #CCC;color:white;"><center>Application Permissions</center></td></tr>   
+                         <tr style="border: 1px solid #CCC;"> 
+                             <th width="15%" style="font-weight: bold;background-color: #9A8249;;border: 1px solid #CCC;color:white;"><center>App Name</center></th>
+                             <th width="15%" style="font-weight: bold;background-color: #9A8249;;border: 1px solid #CCC;color:white;"><center>Visibility</center></th>
+                             <th width="15%" style="font-weight: bold;background-color: #9A8249;;border: 1px solid #CCC;color:white;"><center>Default</center></th>
+                         </tr>    
+                         <apex:repeat value="{!a.lProfAppVisible}" var="p">
+                         <tr style="border: 1px solid #CCC;">
+                             <td style="border: 1px solid #CCC;font-weight: bold;background-color: #CDEAA8;"><center><apex:outputText value="{!p.application}"/></center></td>
+                             <td style="border: 1px solid #CCC;font-weight: bold;background-color: #CDEAA8;"><center> <apex:inputCheckbox disabled="true" value="{!p.visible}"/></center></td>
+                             <td style="border: 1px solid #CCC;font-weight: bold;background-color: #CDEAA8;"><center> <apex:inputCheckbox disabled="true" value="{!p.default_x}"/></center></td>
+                         </tr>
+                         </apex:repeat>
+                      </table><br/> 
+                      <table style="border: 1px solid #CCC;">
+                         <tr><td colspan="2" style="font-weight: bold;background-color: darkcyan;border: 1px solid #CCC;color:white;"><center>Apex Classes</center></td></tr>   
+                         <tr style="border: 1px solid #CCC;"> 
+                             <th width="15%" style="font-weight: bold;background-color: #9A8249;;border: 1px solid #CCC;color:white;"><center>Apex Class Name</center></th>
+                             <th width="15%" style="font-weight: bold;background-color: #9A8249;;border: 1px solid #CCC;color:white;"><center>Enabled</center></th>
+                         </tr>    
+                         <apex:repeat value="{!a.classAccesses}" var="p">
+                         <tr style="border: 1px solid #CCC;">
+                             <td style="border: 1px solid #CCC;font-weight: bold;background-color: #CDEAA8;"><center><apex:outputText value="{!p.apexClass}"/></center></td>
+                             <td style="border: 1px solid #CCC;font-weight: bold;background-color: #CDEAA8;"><center> <apex:inputCheckbox disabled="true" value="{!p.enabled}"/></center></td>
+                         </tr>
+                         </apex:repeat>
+                      </table><br/>
+                      <table style="border: 1px solid #CCC;">
+                         <tr><td colspan="2" style="font-weight: bold;background-color: darkcyan;border: 1px solid #CCC;color:white;"><center>Visualforce Pages</center></td></tr>  
+                         <tr style="border: 1px solid #CCC;"> 
+                             <th width="15%" style="font-weight: bold;background-color: #9A8249;;border: 1px solid #CCC;color:white;"><center>Visualforce Page Name</center></th>
+                             <th width="15%" style="font-weight: bold;background-color: #9A8249;;border: 1px solid #CCC;color:white;"><center>Enabled</center></th>
+                         </tr>    
+                         <apex:repeat value="{!a.pageAccesses}" var="p">
+                         <tr style="border: 1px solid #CCC;">
+                             <td style="border: 1px solid #CCC;font-weight: bold;background-color: #CDEAA8;"><center><apex:outputText value="{!p.apexPage}"/></center></td>
+                             <td style="border: 1px solid #CCC;font-weight: bold;background-color: #CDEAA8;"><center> <apex:inputCheckbox disabled="true" value="{!p.enabled}"/></center></td>
+                         </tr>
+                         </apex:repeat>
+                      </table>
+                      </apex:repeat>
+                 </apex:outputPanel>     
+             </div>
+             
+        </apex:outputPanel>     
+            <apex:outputPanel rendered="{!TypeofVersion=='FreeVersion'}"> 
+                <div style="color: red;font-weight:bold;">
+                *Note: <br/>1. In free version, User can view/export details of only 2 Standard Objects.
+                </div>
+                <div style="color: red;font-weight:bold;">
+                    2. In free version, User can view/export details of only 2 Standard Profiles
+                </div>
+            </apex:outputPanel> 
+            
+     </apex:pageBlock>    
+ </apex:form>
+ 
+ <div id="overlay" style="display:none;">
+ <div class="loadingImg">
+     <apex:image url="{!URLFOR($Resource.bofc__BulkFieldCreator, '/BulkFieldCreatorLoadingImage.gif')}" width="150" height="150" />
+ <br/>
+ <span>Processing...Please Wait...!!!</span>
+ </div>
+ </div>
+ 
+ <script type="text/javascript">
+ function showOverlay()
+ {
+  document.getElementById("overlay").style.display= "block";   
+ }
+ 
+ </script>
+ 
+                
+ 
+</apex:page>

@@ -1,0 +1,4 @@
+<apex:page standardController="Contact" extensions="ContactExt">
+City :
+<apex:outputField value="{!contact.Account.BillingCity}" />
+</apex:page>

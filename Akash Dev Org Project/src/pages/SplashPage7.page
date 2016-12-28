@@ -1,0 +1,40 @@
+<apex:page controller="custable" sidebar="false" showHeader="false">
+    <apex:form >
+        <apex:pageBlock title="Block1" >   I am out of table :( :( <br/> </apex:pageBlock>
+            <table width="100%" height="200">
+                <tbody>
+                    <tr>
+                        <td width="20%;" style="vertical-align:top">
+                        
+             <apex:pageBlock title="Contacts" >
+             <apex:pageBlockTable value="{!conList}" var="a">
+             <apex:column headerValue="Contact Name">
+             <apex:commandLink value=" {!a.Name}" action="{!setupContacts}" reRender="conttable">
+             <apex:param name="idForConts" value="{!a.id}" assignTo="{!recid}"/>
+             </apex:commandLink> 
+             </apex:column>
+             </apex:pageBlockTable>
+             </apex:pageBlock>
+            </td>
+            <td  style="vertical-align:top;" width="20%;">     
+             
+    <apex:pageBlock title="Selected Contact">
+      <apex:pageBlockTable value="{!contacts}" var="contact" id="conttable">
+         <td  style="vertical-align:top;" width="5%;" height="5%;"> 
+         <apex:column >
+          <apex:image id="logo1" url="{!$Resource.imglogo}" width="70px;"/>  
+         </apex:column>
+         </td>
+        <apex:column value="{!contact.FirstName}"/>
+        <apex:column value="{!contact.LastName}"/>
+        </apex:pageBlockTable>
+             </apex:pageBlock>
+            </td>
+              <td  style="Vertical-align:top;" width="20%;">     
+     <apex:pageBlock title="Block4" >   I am table number 4 :( :( <br/> </apex:pageBlock>
+           </td>            
+        </tr>
+    </tbody>
+</table>
+</apex:form>
+</apex:page>

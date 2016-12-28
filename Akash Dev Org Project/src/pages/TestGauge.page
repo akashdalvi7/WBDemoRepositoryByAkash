@@ -1,0 +1,13 @@
+<apex:page controller="TestPageController">
+
+<script>
+    MyChart1.on('beforeconfig', function(config) {
+        config.axes[0].margin=-10;
+    });
+</script>
+
+   <apex:chart name="MyChart1" height="300" width="450" animate="true" data="{!data}">
+       <apex:axis type="Gauge" position="gauge" title="Total NPS Score"  minimum="0" maximum="45" steps="10"/>
+       <apex:gaugeSeries dataField="score" donut="50" colorSet="#00F,#0F0" needle="true"/>       
+   </apex:chart>   
+</apex:page>

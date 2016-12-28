@@ -1,0 +1,22 @@
+<apex:page standardController="account" extensions="CLSCustomizeAccount">
+<apex:pageMessages >
+
+
+</apex:pageMessages>
+   <apex:form >
+      <apex:pageBlock mode="edit">
+           <apex:pageBlockSection title="VF Welcome">
+              <apex:inputField value="{!account.name}"/>
+               <apex:inputField value="{!account.annualrevenue}" />
+               <apex:inputText title="Account_Feedback" label="Account Feedback" value="{!feedback}"/>
+               
+                </apex:pageBlockSection>
+                  <apex:pageBlockButtons >
+                  <apex:commandButton value="save" action="{!accountsaving}"/>
+                  
+                  </apex:pageBlockButtons>
+  
+                  </apex:pageBlock>
+                  
+  </apex:form>
+</apex:page>

@@ -1,0 +1,12 @@
+<apex:page standardController="Account" extensions="Cont1">
+ <apex:form >
+ <apex:pageBlock title="Account Records">
+ <apex:pageBlockTable value="{!accounts}" var="account">
+     <apex:column value="{!account.name}"/> 
+     <apex:column value="{!account.phone}"/>
+ </apex:pageBlockTable> 
+
+ </apex:pageBlock>
+ 
+ </apex:form>
+</apex:page>

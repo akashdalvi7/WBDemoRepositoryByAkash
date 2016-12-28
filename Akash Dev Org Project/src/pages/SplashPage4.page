@@ -1,0 +1,31 @@
+<apex:page showHeader="false" Controller="DisplayContact">
+
+<apex:form >
+<apex:pageBlock title="Block1" >   I am out of table :( :( <br/> </apex:pageBlock>
+<table width="100%" height="200">
+    <tbody>
+        <tr>
+            <td width="30%;" style="vertical-align:top">
+               <apex:pageBlock title="Contacts" >
+                          <apex:pageBlockTable value="{!conList}" var="a" id="list">
+                          <apex:column headerValue="Contact Name">
+                          <apex:commandLink value=" {!a.Name}" action="{!ContactLists}" reRender="list1">
+                          <apex:param name="id" value="{!a.id}"/>
+                          </apex:commandLink> 
+                          </apex:column>
+                          </apex:pageBlockTable>
+                        </apex:pageBlock>
+            </td>
+            <td  style="vertical-align:top;">
+                <apex:pageBlock title="Selected Contact" >
+                    <apex:pageBlockTable value="{!lstContact}" var="c" id="list1">
+                            <apex:outputText value="{!c.Name}"/>
+                             
+                   </apex:pageBlockTable>
+                </apex:pageBlock>
+            </td>
+        </tr>
+    </tbody>
+</table>
+</apex:form>
+</apex:page>

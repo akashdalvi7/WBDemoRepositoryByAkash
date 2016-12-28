@@ -1,0 +1,40 @@
+<apex:page controller="AlternateCardKAC5Controller" >
+  <apex:form >
+     <apex:pageBlock >
+         <apex:pageBlockSection >
+                       
+
+<script type="text/javascript">
+
+function yesnoCheck() {
+    if (document.getElementById('noCheck').checked) {
+        document.getElementById('ifNo').style.display = 'block';
+    }
+    else document.getElementById('ifYes').style.display = 'none';
+
+}
+
+</script>
+
+     <label>Do you want to continue with current address as card address</label>
+     <label><input type="radio" onclick="javascript:yesnoCheck();" name="yesno" id="yesCheck"/>Yes</label>
+     <label><input type="radio" onclick="javascript:yesnoCheck();" name="yesno" id="noCheck"/>No</label>
+         
+         <div id="ifYes" style="display:none">
+                
+         </div>
+          
+         <div id="ifNo" style="display:block">
+             <input type="radio" name="RegAddr" value="RegAddr" id="RegAddr" />Registered address
+             <input type="radio" name="BillAddr" value="BillAddr" id="BillAddr" />Billing address
+             <input type="radio" name="DirAddr" value="DirAddr" id="DirAddr" />Director/Proprietary address
+             <input type="radio" name="NewAddr" value="NewAddr" id="NewAddr" />Search new address
+        </div>
+         
+         
+
+         
+         </apex:pageBlockSection>
+     </apex:pageBlock>
+  </apex:form>    
+</apex:page>

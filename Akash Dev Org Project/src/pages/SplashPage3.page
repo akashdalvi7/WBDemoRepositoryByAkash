@@ -1,0 +1,11 @@
+<apex:page >
+   <apex:form >
+    <apex:panelGrid columns="2">
+        <apex:pageblock title="titleA" id="blockA">
+        </apex:pageblock>
+        <apex:pageblock title="titleB" id="blockB">
+        <apex:inputText id="theTextInput" label="Lable123"/>
+        </apex:pageblock>
+    </apex:panelGrid>
+</apex:form>
+</apex:page>

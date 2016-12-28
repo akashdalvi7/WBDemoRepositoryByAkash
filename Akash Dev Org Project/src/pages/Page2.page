@@ -1,0 +1,7 @@
+<apex:page controller="redirectdemocontroller">
+<apex:pageBlock >
+    <apex:pageBlockTable value="{!conList}" var="con">
+        <apex:column value="{!con.name}"/>
+    </apex:pageBlockTable>
+</apex:pageBlock>
+</apex:page>

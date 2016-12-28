@@ -1,0 +1,342 @@
+<apex:page controller="bofc.AssignBulkFLS" sidebar="false" showHeader="false">
+<style>
+        .drop_zone
+        {
+        border: 2px dashed #bbb;
+        -moz-border-radius: 5px;
+        -webkit-border-radius: 5px;
+        border-radius: 5px;
+        width: 65%;
+        margin:0 auto;
+        margin-bottom:10px;
+        }
+        
+        .drop_zone input
+        {
+        color: #999999;
+        margin-left: 92px;
+        margin-top: 20px;
+        }
+        .drag_drop_qoute
+        {
+        -moz-border-radius: 5px;
+        -webkit-border-radius: 5px;
+        border-radius: 5px;
+        padding:8px;
+        text-align: center;
+        font: 16pt bold Arial, Helvetica, sans-serif;
+        color: #44BEEE;
+        
+        }
+        
+        
+        
+        #spinnerDiv
+        {
+        position: fixed;
+        top: 50%;
+        left: 50%;
+        z-index: 111;
+        }
+        
+        .overlay_div
+        {
+        display:none;
+        position:fixed;
+        width:100%;
+        height:100%;
+        opacity:0.1;
+        top: 0px;
+        left: 0px;
+        z-index: 1111;
+        background-color:#000;
+        }
+        
+        body .bPageTitle{
+        padding: 10px 0 0 !important;
+        }
+        
+        .bPageTitle {
+              margin-bottom: 0px !important;
+         }
+         
+         .bPageTitle .ptBody .content{width:30% !important;}
+         
+         body{width:90% !important; margin:0 auto !important;}
+         
+         .downloadClass{
+            font-size: 15px;
+            text-align: right;
+            float: right;
+            
+            font-weight: bold;
+            padding: 7px;
+            background: #44BEEE;
+            border: 2px solid #44BEEE;
+            border-radius: 3px;
+            color: #fff;
+            }
+            
+             .downloadClass a{
+             color: #fff;
+             }
+                
+                .hideDropClass{
+            font-size: 15px;
+            text-align: right;
+            float: right;
+            margin-right: 8px;
+            font-weight: bold;
+            border: 1px solid #44BEEE;
+            padding: 2px;
+            border-radius: 3px;
+            }
+            
+            .OCpageDescription{
+                font-size:25px;}
+                
+             .ptBody {
+              background-color: #fff !important;
+              padding: 0px;
+              color: #000;
+              padding: 5px 0 9px 0 !important;
+              clear: both;  
+              border-bottom: 8px solid #44BEEF;
+              position: fixed;
+              width: 90%;
+              z-index: 1111;
+            }
+              .OCpageType{
+                  font-size:11px;
+                  font-weight:bold;
+                  color:#000;
+                  
+              }      
+              
+             body .content{
+                width: 29%;
+              float: left;
+              
+            }
+            
+            .ShowHideButtonClass{
+              background: transparent;
+              padding: 0px;
+              border: 0px;
+              padding: 7px;
+              }
+            
+            form{
+              clear: both;
+              padding-top: 8%;
+            }
+            
+            .table_container
+            {
+             overflow-x:auto;
+            }
+        
+    </style>
+
+    <apex:includeScript value="{!URLFOR($Resource.bofc__BulkFieldCreator, 'js/jquery-1.9.1.js')}" />
+    <apex:includeScript value="{!URLFOR($Resource.bofc__BulkFieldCreator, 'js/jquery.csv-0.71.js')}" />
+    <apex:includeScript value="{!URLFOR($Resource.bofc__BulkFieldCreator, 'ExcelUpload/excel/jszip.js')}" />
+    <apex:includeScript value="{!URLFOR($Resource.bofc__BulkFieldCreator, 'ExcelUpload/excel/xlsx.js')}" />
+    <apex:includeScript value="{!URLFOR($Resource.bofc__BulkFieldCreator, 'ExcelUpload/excel/xls.js')}" />
+    <apex:includeScript value="{!$Resource.bofc__Spin}" />
+    
+    <div class="ptBody secondaryPalette brandSecondaryBrd">
+        <apex:outputPanel rendered="{!TypeofVersion=='FreeVersion'}">
+                    <div style="background: red;width: 100%;margin-bottom:10px; color: white;   text-align: center; font-size: 20px;">
+                             Free version. For Unlimited access <a style="color: white;" target="_blank" href="http://store.tech9logy.com/salesforce/bulk-object-field-creator.html"><u>Click Here</u></a>
+                    </div>
+                </apex:outputPanel>
+        
+        <div class="content">
+            <h1 class="OCpageType">Salesforce</h1><br/>
+            <span class="titleSeparatingColon">:</span>
+            <h2 class="OCpageDescription">Assign Field Level Security</h2>
+            <div class="blank"></div>
+        </div>
+    
+    
+   </div>
+   
+    <script>
+        function clickBox(visible,readOnly,type){
+            var visibleVal = document.getElementById(visible).checked;
+            // alert(visibleVal);
+            
+            var readOnlyVal = document.getElementById(readOnly).checked;
+            // alert(readOnlyVal);
+            
+            if(visibleVal == false && type=='Visible'){
+                //alert('inside if condition');
+                document.getElementById(readOnly).checked = false;
+            }
+            if(readOnlyVal == true && type=='ReadOnly'){
+                // alert('inside if condition');
+                document.getElementById(visible).checked = true;
+            }
+        }
+    </script>
+     
+
+       
+ <apex:form >
+     <apex:pageBlock title="Assign Field Level Security" mode="maindetail">
+         
+          <apex:pageblockButtons >
+            <apex:commandButton disabled="{!!AllowPageAccess}" value="Fetch FLS Details" onclick="showOverlay()" action="{!fetchDisplayFLSDetails}" style="border-radius: 5px;color: white;padding: 7px;padding-right: 6px; background: lightseagreen;    font-size: 14px;    margin: 0px;    font-weight: bold;"/>
+            <apex:commandButton disabled="{!AllowPageAccess==false || lWrapperClassFLS.size==0}" value="Save New FLS" onclick="showOverlay()"  action="{!SaveNewFLS}" style="border-radius: 5px; color: black;  padding: 6px;  padding-right: 6px;  font-size: 10px;  margin: 2px; background: bisque; font-weight: bold;"/>
+            <!-- <apex:commandButton disabled="{!!AllowPageAccess}" value="Export FLS Details" onclick="window.open('/apex/FLSExport?Object={!ObjectName}','');" style="border-radius: 5px; color: black;  padding: 6px;  padding-right: 6px;  font-size: 10px;  margin: 2px; background: bisque; font-weight: bold;"/>  -->
+          </apex:pageblockButtons>
+          <apex:outputPanel rendered="{!AllowPageAccess}">
+           
+           <apex:pageBlockSection columns="2">
+            <apex:pageblockSectionItem >
+                Object Name
+                <apex:outputPanel >
+                    <apex:selectList value="{!ObjectName}" multiselect="false" size="1" style="border-left:3px solid red">
+                        <apex:selectOptions value="{!StandardCustomIgnoreSytemObjects}"/>
+                    </apex:selectList>
+                    <span style="color:red;font-size: 10px;text-align: right; margin: 10px;">*Select name of Object</span>
+                </apex:outputPanel>
+            </apex:pageblockSectionItem>
+            <!-- <apex:pageblockSectionItem >
+            <apex:outputPanel >
+            <apex:commandButton value="Fetch FLS Details" onclick="showOverlay()" action="{!fetchDisplayFLSDetails}" style="border-radius: 5px;color: white;padding: 7px;padding-right: 6px; background: red;font-size: 12px; margin: 0px;"/>
+            <apex:commandButton value="Save New FLS" onclick="showOverlay()" action="{!SaveNewFLS}" style="border-radius: 5px; color: black;  padding: 6px;  padding-right: 6px;  font-size: 10px;  margin: 2px; background: bisque; font-weight: bold;"/>
+            <apex:commandButton value="Export FLS Details" onclick="exportFLS()"  style="border-radius: 5px; color: black;  padding: 6px;  padding-right: 6px;  font-size: 10px;  margin: 2px; background: bisque; font-weight: bold;"/>
+            
+            </apex:outputPanel>
+            </apex:pageblockSectionItem >-->
+        </apex:pageblockSection>
+        
+        <apex:pageMessages ></apex:pageMessages>
+       
+       <div class="tableContainer" style="overflow-x:auto">
+           <!--  <table style="border: 1px solid #CCC;">
+                 <tr style="border: 1px solid #CCC;"> 
+                     <th class="tableHead" style="font-weight: bold;background-color: #9A8249;;border: 1px solid #CCC;color:white;"><center>Field Name  </center></th>
+                     <apex:repeat value="{!lProfile}" var="p">
+                         <th class="tableHead" style="font-weight: bold;background-color: #A097D4;border: 1px solid #CCC;color:white;"><center> {!p.name}   </center> </th>
+                     </apex:repeat>
+                 </tr>    
+                 
+                 <apex:repeat value="{!lString}" var="p1">
+                      <tr style="border: 1px solid #CCC;">
+                         <td style="border: 1px solid #CCC;font-weight: bold;background-color: #9A8249;color:white;">
+                         <center>
+                             {!p1}
+                         </center></td>
+                         <apex:repeat value="{!lProfile}" var="p">
+                          <apex:repeat value="{!lWrapperClassFLS}" var="a">
+                            <apex:outputPanel rendered="{!left(p.id,15) == a.profileId}">
+                             <td style="font-weight: bold;background-color: #CDEAA8;border: 1px solid #CCC;"> 
+                                <table width="120px">
+                                 <tr>
+                                     <td>Visible:</td><td> <apex:inputCheckbox value="{!a.m_field[p1]['Visible']}" id="VisibleId" onclick="clickBox('{!$Component.VisibleId}','{!$Component.ReadOnlyId}','Visible');" /> </td> 
+                                 </tr>
+                                 <tr>
+                                     <td>Read Only:</td><td> <apex:inputCheckbox value="{!a.m_field[p1]['ReadOnly']}" id="ReadOnlyId" onclick="clickBox('{!$Component.VisibleId}','{!$Component.ReadOnlyId}','ReadOnly');"/> </td> 
+                                 </tr>
+                                </table>
+                             </td>
+                            </apex:outputPanel>
+                         </apex:repeat>   
+                 </apex:repeat>
+                 </tr>
+                 </apex:repeat>
+                
+             </table> -->
+             <apex:outputPanel rendered="{!lWrapperClassFLS.size > 0}">
+             <table style="border: 1px solid #CCC;">
+                 <tr style="border: 1px solid #CCC;"> 
+                     <th class="tableHead" style="font-weight: bold;background-color: #9A8249;;border: 1px solid #CCC;color:white;"><center>Profile Name  </center></th>
+                     <apex:repeat value="{!lStringFIeldName}" var="p">
+                         <th class="tableHead" style="font-weight: bold;background-color: #A097D4;border: 1px solid #CCC;color:white;">
+                             <center> {!p}   </center> </th>
+                     </apex:repeat>
+                 </tr>    
+             
+                 <apex:repeat value="{!lWrapperClassFLS}" var="a">
+                     <tr style="border: 1px solid #CCC;">
+                         <td style="border: 1px solid #CCC;font-weight: bold;background-color: #9A8249;color:white;">
+                         <center>
+                             {!a.ProfileName }
+                         </center></td>
+                         <apex:repeat value="{!lString}" var="p1">
+                             <td style="font-weight: bold;background-color: #CDEAA8;border: 1px solid #CCC;"> 
+                                <table width="120px">
+                                 <tr>
+                                     <td>Visible:</td><td> <apex:inputCheckbox value="{!a.m_field[p1]['Visible']}" id="VisibleId" onclick="clickBox('{!$Component.VisibleId}','{!$Component.ReadOnlyId}','Visible');" /> </td> 
+                                 </tr>
+                                 <tr>
+                                     <td>Read Only:</td><td> <apex:inputCheckbox value="{!a.m_field[p1]['ReadOnly']}" id="ReadOnlyId" onclick="clickBox('{!$Component.VisibleId}','{!$Component.ReadOnlyId}','ReadOnly');"/> </td> 
+                                 </tr>
+                                </table>
+                             </td>
+                            
+                         </apex:repeat>
+                     </tr>    
+                 </apex:repeat>
+                 
+                 <!-- <apex:repeat value="{!lString}" var="p1">
+                      <tr style="border: 1px solid #CCC;">
+                         <td style="border: 1px solid #CCC;font-weight: bold;background-color: #9A8249;color:white;">
+                         <center>
+                             {!p1}
+                         </center></td>
+                         <apex:repeat value="{!lProfile}" var="p">
+                          <apex:repeat value="{!lWrapperClassFLS}" var="a">
+                            <apex:outputPanel rendered="{!left(p.id,15) == a.profileId}">
+                             <td style="font-weight: bold;background-color: #CDEAA8;border: 1px solid #CCC;"> 
+                                <table width="120px">
+                                 <tr>
+                                     <td>Visible:</td><td> <apex:inputCheckbox value="{!a.m_field[p1]['Visible']}" id="VisibleId" onclick="clickBox('{!$Component.VisibleId}','{!$Component.ReadOnlyId}','Visible');" /> </td> 
+                                 </tr>
+                                 <tr>
+                                     <td>Read Only:</td><td> <apex:inputCheckbox value="{!a.m_field[p1]['ReadOnly']}" id="ReadOnlyId" onclick="clickBox('{!$Component.VisibleId}','{!$Component.ReadOnlyId}','ReadOnly');"/> </td> 
+                                 </tr>
+                                </table>
+                             </td>
+                            </apex:outputPanel>
+                         </apex:repeat>   
+                 </apex:repeat>
+                 </tr>
+                 </apex:repeat> -->
+                
+             </table>
+             </apex:outputPanel>
+             
+             
+       </div>      
+       </apex:outputPanel><br/>
+        <apex:outputPanel rendered="{!TypeofVersion=='FreeVersion'}"> 
+                <div style="color: red;font-weight:bold;">
+                *Note: <br/>1. In free version, User can view FLS details of only 2 Standard Objects.
+                </div>
+                <div style="color: red;font-weight:bold;">
+                    2. In free version, User can update FLS details of only 2 Standard Profiles
+                </div>
+        </apex:outputPanel> 
+     </apex:pageBlock>    
+ </apex:form>
+ 
+ <div id="overlay" style="display:none;">
+     <div class="loadingImg" style="text-align:center">
+     <apex:image url="{!URLFOR($Resource.bofc__BulkFieldCreator, '/BulkFieldCreatorLoadingImage.gif')}" width="150" height="150" />
+     <br/>
+     <span>Processing...Please Wait...!!!</span>
+     </div>
+ </div>
+ 
+ <script type="text/javascript">
+ function showOverlay()
+ {
+     document.getElementById("overlay").style.display= "block";   
+ }
+ </script>
+
+</apex:page>

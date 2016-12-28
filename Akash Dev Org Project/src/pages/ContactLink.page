@@ -1,0 +1,12 @@
+<apex:page standardController="Account" extensions="Cont1">
+    <apex:form >
+    <apex:pageBlock title="Edit Account">
+        <apex:pageBlockSection >
+            <apex:inputText value="{! getName }"/>       
+        </apex:pageBlockSection>
+        <apex:pageBlockButtons >
+            <apex:commandButton action="{! Clickme }"  value="Click me" />       
+        </apex:pageBlockButtons>
+    </apex:pageBlock>
+</apex:form>
+</apex:page>

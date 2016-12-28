@@ -1,0 +1,8 @@
+<apex:page Controller="MyController">
+<apex:form >
+Hello {!$User.FirstName}!
+<apex:pageBlock >
+<apex:commandButton value="save" action="{!save}"/>
+</apex:pageBlock>
+</apex:form>
+</apex:page>

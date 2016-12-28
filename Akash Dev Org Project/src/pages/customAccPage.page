@@ -1,0 +1,13 @@
+<apex:page standardController="Account">
+    <script>
+        function callJ(b){
+            alert('Hi');
+            alert(b.value);
+        }
+    </script>
+    <apex:form >
+        <apex:pageBlock >
+            <apex:inputField value="{!account.Industry}" onmouseover="callJ(this);"/>
+        </apex:pageBlock>
+    </apex:form>
+</apex:page>

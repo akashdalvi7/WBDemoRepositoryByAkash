@@ -1,0 +1,18 @@
+<apex:page standardController="account">
+
+  <!-- <apex:includeScript value="{!$Resource.home2}"/> -->
+   <apex:form >
+     <br></br>
+      Enter Your Name <br></br> <apex:inputField styleClass="text" value="{!account.name}"/>
+      <br></br>
+       <apex:commandButton value="Show Javascript Alert" styleClass="but1" reRender="abc"/>
+   </apex:form>
+    
+     <script>
+        $(document).ready(function(){
+          $(".but1").click(function(){
+            alert("Hello Mr. "+$(".text").val());
+            });
+        });
+     </script>
+</apex:page>

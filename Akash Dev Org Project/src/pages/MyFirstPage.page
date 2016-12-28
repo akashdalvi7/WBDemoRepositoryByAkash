@@ -1,0 +1,7 @@
+<apex:page >
+  <!-- Begin Default Content REMOVE THIS -->
+  <bgcolor="blue"></b>
+  <h1>Congratulations Akash</h1>
+  <br>This is your first page.</br>
+  <!-- End Default Content REMOVE THIS -->
+</apex:page>

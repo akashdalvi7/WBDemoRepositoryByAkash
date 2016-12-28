@@ -1,0 +1,12 @@
+<apex:page controller="wrapperClassController">
+  <apex:form >
+     <apex:pageBlock >
+         <apex:pageBlockTable value="{!selectedContacts}" var="c" id="table">
+                <!-- This is how we access the contact values within our cContact container/wrapper -->
+                <apex:column value="{!c.Name}" />
+                <apex:column value="{!c.Email}" />
+                <apex:column value="{!c.Phone}" />
+         </apex:pageBlockTable>
+    </apex:pageBlock>
+   </apex:form>
+</apex:page>

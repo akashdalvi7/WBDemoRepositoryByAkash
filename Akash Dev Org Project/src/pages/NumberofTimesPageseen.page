@@ -1,0 +1,8 @@
+<apex:page standardController="Account" extensions="AccountpageViewCounter,AccountTransaction" action="{!updateCount}">
+<apex:pageBlock title="Account View Counter">
+    <apex:pageBlockSection >
+        Total page views : <apex:outputText value="{!acc.Number_of_times_page_viewed__c}"></apex:outputText>
+        Last Viewed by : <apex:outputText value="{!acc.Last_viewed_by__c}"></apex:outputText>
+    </apex:pageBlockSection>
+</apex:pageBlock>
+</apex:page>

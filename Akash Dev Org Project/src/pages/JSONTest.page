@@ -1,0 +1,11 @@
+<apex:page >
+<script language="javascript" type="text/javascript">
+  var data={
+    "firstName":"Ray",
+    "lastName":"Villalobos",
+    "joined":2012
+  };
+console.log(  person.age ); 
+</script>  
+
+</apex:page>

@@ -1,0 +1,16 @@
+<apex:page standardController="VisitedUserName__c">
+   <apex:includeScript value="/soap/ajax/28.0/connection.js"/>
+   <script type="text/javascript">
+       sforce.connection.sessionId = '{!GETSESSIONID()}';
+
+       var object = new sforce.SObject('VisitedUserName__c');
+       object.Id = "{!VisitedUserName__c.Id}";
+       object.Name = "{$!UserInfo.getFirstName()}";
+
+       var result = sforce.connection.update([object]);
+       
+       if(result[0].success != 'true'){
+           alert('Could not Update the Record View Tracking Information. \r\nError: ' + result[0].errors.message);
+       }
+   </script>
+</apex:page>

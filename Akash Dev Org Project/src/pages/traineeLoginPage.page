@@ -1,0 +1,46 @@
+<apex:page sidebar="false" id="firstpage" standardController="Trainee__c">
+  <apex:form id="form1">
+  <apex:pageBlock >
+   <apex:pageBlockSection id="pbs" title="Authentication" collapsible="false">
+       <apex:pageBlockSectionItem id="pbsi1">
+       <apex:outputLabel id="ol1" value="Username">
+       </apex:outputLabel>
+       <apex:inputField id="ifl1" value="{!Trainee__c.Username__c}"/>
+       
+
+       </apex:pageBlockSectionItem>
+       
+       <apex:pageBlockSectionItem id="pbsi2">
+       <apex:outputLabel id="ol2" value="Password">
+       </apex:outputLabel>
+       <apex:inputField id="ifl2" value="{!Trainee__c.Password__c}"/>
+
+       </apex:pageBlockSectionItem>
+
+       
+  </apex:pageBlockSection>
+   
+   <apex:pageBlockSection id="pbs2" title="Checked">
+       <apex:pageBlockSectionItem id="pbsi3">
+       <apex:outputLabel id="ol1" value="Username">
+       </apex:outputLabel>
+       <apex:inputField id="ifl1" value="{!Trainee__c.Username__c}"/>
+       
+
+       </apex:pageBlockSectionItem>
+       
+       <apex:pageBlockSectionItem id="pbsi4">
+       <apex:outputLabel id="ol2" value="Password">
+       </apex:outputLabel>
+       <apex:inputField id="ifl2" value="{!Trainee__c.Password__c}"/>
+
+       </apex:pageBlockSectionItem>
+   </apex:pageBlockSection>
+   
+   <apex:pageblockButtons id="pbb1">
+  <apex:commandButton id="cb1" value="Update"/>
+   </apex:pageblockButtons>
+   </apex:pageBlock>
+  
+  </apex:form>
+</apex:page>

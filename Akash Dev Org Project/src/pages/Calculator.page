@@ -1,0 +1,13 @@
+<apex:page controller="Calculator">
+<apex:form >
+<apex:pageBlock >
+<apex:outputLabel value="First Number"></apex:outputLabel>
+<apex:inputText id="a" value="{!a}" label="Number1"/>
+<apex:outputLabel value="Second Number"></apex:outputLabel>
+<apex:inputText id="b" value="{!b}"/>
+<apex:outputLabel value="Result"></apex:outputLabel>
+<apex:inputText id="c" value="{!c}"/>
+<apex:commandButton value="Calculate" action="{!Calculate}"/>
+</apex:pageBlock>
+</apex:form>
+</apex:page>

@@ -1,0 +1,12 @@
+<apex:page standardController="Bug__c" extensions="exampleCon">
+    <apex:form >
+        <apex:outputpanel id="counter">
+            <!--<apex:outputText value="Click Me!: {!count}"/> -->
+            <apex:inputField value="{!Bug__c.Name__c}" />
+            <apex:actionSupport event="onchange" 
+                                action="{!incrementCounter}" 
+                                />
+        </apex:outputpanel>
+        
+    </apex:form>
+</apex:page>

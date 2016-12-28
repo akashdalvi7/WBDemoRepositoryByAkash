@@ -1,0 +1,9 @@
+<apex:page standardController="Account"  tabStyle="Account">
+<apex:form >
+<apex:pageBlock title="Akash" id="searchBlock" >
+<apex:pageBlockButtons location="top">
+<!-- <apex:commandButton value="Click me" onclick="window.location='https://ap1.salesforce.com/5009000000Cvobn'; return false;"/> -->
+</apex:pageBlockButtons>
+</apex:pageBlock>
+</apex:form>
+</apex:page>

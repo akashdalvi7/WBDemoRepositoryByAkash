@@ -1,0 +1,6 @@
+<apex:page controller="Checkboxcontroller">
+<apex:form >
+<apex:inputcheckbox value="{!mycheckval}" />
+<apex:commandbutton value="Do Something" action="{!dosomething}" />
+</apex:form>
+</apex:page>

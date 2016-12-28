@@ -1,0 +1,14 @@
+<apex:page controller="ResetPage">
+<apex:form >
+    <apex:pageBlock >
+        <apex:panelGrid >
+            Name: <apex:inputtext />
+            Age: <apex:inputtext />
+            Addres: <apex:inputTextarea />                        
+        </apex:panelGrid>
+        <apex:pageBlockButtons >
+            <apex:commandButton value="Reset" action="{!reset}"/>
+        </apex:pageBlockButtons>
+    </apex:pageBlock>
+</apex:form>    
+</apex:page>

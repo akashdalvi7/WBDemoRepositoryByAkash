@@ -1,0 +1,16 @@
+<apex:page standardController="Opportunity">
+   <apex:includeScript value="/soap/ajax/28.0/connection.js"/>
+   <script type="text/javascript">
+       sforce.connection.sessionId = '{!GETSESSIONID()}';
+
+       var object = new sforce.SObject('Opportunity');
+       object.Id = "{!Opportunity.Id}";
+       object.Record_View_Count__c = {!Opportunity.Record_View_Count__c} + 1;
+
+       var result = sforce.connection.update([object]);
+       
+       if(result[0].success != 'true'){
+           alert('Could not Update the Record View Tracking Information. \r\nError: ' + result[0].errors.message);
+       }
+   </script>
+</apex:page>
